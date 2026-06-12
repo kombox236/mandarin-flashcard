@@ -1,0 +1,2607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mandarin Flashcard App</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .app {
+      position: relative;
+      width: 95%;
+      max-width: 500px;
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid #ddd;
+      font-size: 16px;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: #888;
+    }
+
+    .search-results {
+      margin-top: 10px;
+      text-align: left;
+      max-height: 220px;
+      overflow-y: auto;
+      border-radius: 12px;
+    }
+
+    .search-item {
+      padding: 10px 12px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .search-item:hover {
+      background: #f3f3f3;
+    }
+
+    .search-item-cn {
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+
+    .hanzi {
+      font-size: 96px;
+      margin: 20px 0;
+    }
+
+    .details {
+  margin-top: 20px;
+    }
+
+    .pinyin {
+      font-size: 32px;
+      color: #444;
+      margin-bottom: 10px;
+    }
+
+    .meaning {
+      font-size: 24px;
+      margin-bottom: 20px;
+      white-space: pre-line;
+      line-height: 1.6;
+      user-select: text;
+    }
+
+    .sentence-cn {
+      font-size: 28px;
+      margin-top: 16px;
+      cursor: pointer;
+      user-select: text;
+    }
+
+
+    .common-words {
+      margin-top: 18px;
+      text-align: center;
+      line-height: 1.8;
+      font-size: 18px;
+      user-select: text;
+    }
+
+    .common-word-item {
+  display: inline-block;
+  margin: 0 6px;
+}
+
+    .sentence-py {
+      color: #666;
+      margin-top: 8px;
+      font-size: 18px;
+    }
+
+    .sentence-th {
+      margin-top: 8px;
+      font-size: 18px;
+    }
+
+    .memory-buttons {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+.review-modes {
+  margin-top: 20px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+    .memory-btn {
+      border: none;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .hard-btn {
+  background: #C90E0E;
+}
+
+.review-btn {
+  background: #f57c00;
+}
+
+.know-btn {
+  background: #2e7d32;
+}
+
+
+    .buttons {
+      margin-top: 30px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #222;
+      color: white;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .status {
+      margin-top: 20px;
+      color: #777;
+      font-size: 14px;
+    }
+  
+
+.clickable-word {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: #bbb;
+  text-underline-offset: 3px;
+  font-size: 24px;
+  font-weight: 600;
+  transition: opacity 0.15s ease;
+}
+
+.clickable-word:active {
+  opacity: 0.6;
+}
+.word-detail {
+  font-size: 16px;
+  color: #666;
+  margin-top: 4px;
+  line-height: 1.5;
+}
+.settings-panel {
+  display: none;
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #f3f3f3;
+}
+
+.settings-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.word-reveal {
+  margin-top: 12px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.word-reveal-cn {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.word-reveal-py {
+  font-size: 18px;
+  color: #666;
+}
+
+.word-reveal-th {
+  font-size: 18px;
+}
+.hint-box {
+  display: none;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #fff8cc;
+  border: 1px solid #f0d76a;
+  color: #7a5d00;
+  font-size: 17px;
+  line-height: 1.7;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.confused-box {
+
+  display:none;
+
+  position:absolute;
+
+  top: 30px;
+  left: 62%;
+
+  max-width:90px;
+  white-space:normal;
+
+  background:none;
+  border:none;
+  box-shadow:none;
+  padding:0;
+
+  color:#1976d2;
+
+  font-size:15px;
+  font-weight:600;
+
+  line-height:1.3;
+  text-align:left;
+  pointer-events: auto;
+}
+.compare-mode {
+
+  top: 180px !important;
+
+  left: 55% !important;
+
+  max-width: none !important;
+
+  white-space: nowrap !important;
+
+}
+#similarText {
+  font-weight: 600;
+}
+
+.hanzi-wrapper{
+  position:relative;
+  display:flex;
+  justify-content:center;
+}
+.seen-reminder {
+
+  display:none;
+
+  position:absolute;
+
+  left:20px;
+  top:90px;
+
+  background:#fff8cc;
+
+  border:1px solid #f0d76a;
+
+  border-radius:999px;
+
+  padding:6px 10px;
+
+  font-size:14px;
+
+  color:#7a5d00;
+
+  cursor:pointer;
+
+  user-select:none;
+
+  z-index: 9999;
+
+}
+
+.favorite-star {
+
+  position:absolute;
+
+  top:20px;
+  left:20px;
+
+  font-size:24px;
+
+  cursor:pointer;
+
+  user-select:none;
+
+  z-index:9999;
+
+}
+
+#polyphonicIndicator {
+
+  font-size: 14px;
+  color: #2563eb;
+
+  position: relative;
+
+  top: 150px;
+  left: 9px;
+
+  display: none;
+
+}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search hanzi • pinyin • thai • english"
+      class="search-input"
+      oninput="searchCards()"
+    />
+    <div id="searchResults" class="search-results"></div>
+    
+    <div class="hanzi-wrapper">
+<div
+  id="seenReminder"
+  class="seen-reminder"
+  onclick="handleSeenReminder()"
+>
+  👁 10+
+</div>
+<div
+  id="favoriteStar"
+  class="favorite-star"
+  onclick="toggleFavorite()"
+>
+  ☆
+</div>
+  <div id="hanzi" class="hanzi">Loading...</div>
+  <div id="polyphonicIndicator"></div>
+
+  <div id="similarBox" class="confused-box">
+    <span id="similarText"></span>
+  </div>
+<div id="compareBox"
+     style="
+       display:none;
+       margin-top:-20px;
+       text-align:center;
+     ">
+
+  <span id="compareLeft"
+        style="
+          font-size:64px;
+          margin-right:30px;
+        ">
+  </span>
+
+ <span id="compareRight"
+      style="
+        font-size:120px;
+        margin-left:40px;
+        position:relative;
+        top:40px;
+      ">
+</span>
+
+</div>
+</div>
+<div id="comparePopup"
+     style="
+       display:none;
+       position:fixed;
+       top:50%;
+       left:50%;
+       transform:translate(-50%,-50%);
+       background:white;
+       border:1px solid #ccc;
+       border-radius:12px;
+       padding:16px;
+       z-index:9999;
+       text-align:center;
+       min-width:220px;
+       box-shadow:0 4px 12px rgba(0,0,0,0.2);
+     ">
+
+  <div id="popupHanzi"
+       style="font-size:48px;">
+  </div>
+
+  <div id="popupPinyin"
+       style="font-size:20px;">
+  </div>
+
+  <div id="popupMeaning"
+       style="margin-top:8px;">
+  </div>
+
+  <br>
+
+<button
+  id="popupOpenBtn"
+  onclick="openCompareCard()">
+  Open Card
+</button>
+
+  <button
+    onclick="
+      document.getElementById(
+        'comparePopup'
+      ).style.display='none';
+    ">
+    Close
+  </button>
+
+</div>
+<div id="details" class="details">
+
+    <div id="pinyin" class="pinyin"></div>
+
+    <div id="meaning" class="meaning"></div>
+
+    <div id="commonWords" class="common-words"></div>
+
+    <div id="wordReveal" class="word-reveal"></div>
+
+    <div id="sentenceCn" class="sentence-cn"></div>
+
+    <div id="sentencePy" class="sentence-py"></div>
+
+    <div id="sentenceTh" class="sentence-th"></div>
+
+    <div id="hintBox" class="hint-box" style="display:none;">
+    💡 <span id="hintText"></span>
+    </div>
+</div>
+    <div class="buttons">
+
+  <button
+    id="revealBtn"
+    onclick="revealCard()"
+  >
+    Reveal
+  </button>
+
+  <button
+    id="nextBtn"
+    onclick="nextCard()"
+  >
+    Next
+  </button>
+
+  <button
+    id="previousBtn"
+    onclick="goPreviousCard()"
+  >
+    Previous
+  </button>
+
+  <button onclick="randomCard()">
+    Random
+  </button>
+
+  <button
+    id="speakBtn"
+    onclick="speakHanzi()"
+  >
+    Speak
+  </button>
+
+  <button onclick="toggleSettings()">
+    ⚙ Settings
+  </button>
+
+  <button
+    id="hintBtn"
+    onclick="toggleHint()"
+  >
+    Hint
+  </button>
+
+</div>
+<div id="activeModeBar">
+
+  <button
+    id="activeModeButton"
+    onclick="toggleModeSelector()"
+  >
+    ALL ▼
+  </button>
+
+</div>
+<div
+  id="modeSelector"
+  style="
+    display:none;
+    margin-top:8px;
+    border:1px solid #ddd;
+    border-radius:12px;
+    padding:8px;
+    background:white;
+  "
+>
+
+<button onclick="setMode('all')">
+All
+</button>
+
+<button onclick="setMode('hard')">
+Forget
+</button>
+
+<button onclick="setMode('review')">
+Recall
+</button>
+
+<button onclick="setMode('unknown')">
+Unknown
+</button>
+
+<button onclick="setMode('due')">
+Due Today
+</button>
+
+<button onclick="setMode('needdecision')">
+Need Decision
+</button>
+
+</div>
+<div
+  class="review-modes"
+  style="display:none;"
+>
+  <button class="mode-btn all-mode-btn" onclick="setMode('all')">All</button>
+
+<button class="mode-btn hard-mode-btn" onclick="setMode('hard')">Hard</button>
+
+<button class="mode-btn review-mode-btn" onclick="setMode('review')">Review</button>
+
+<button class="mode-btn unknown-mode-btn" onclick="setMode('unknown')">Unknown</button>
+<button class="mode-btn due-mode-btn" onclick="setMode('due')">Due Today</button>
+
+<button class="mode-btn needdecision-mode-btn" onclick="setMode('needdecision')">
+  Need Decision
+</button>
+
+</div>
+    <div class="memory-buttons">
+     <div class="memory-buttons">
+
+<button class="memory-btn hard-btn" onclick="markCard('hard')">
+✕ Forget
+</button>
+
+<button class="memory-btn review-btn" onclick="markCard('review')">
+↺ Recall
+</button>
+
+<button class="memory-btn know-btn" onclick="markCard('know')">
+✓ Know
+</button>
+
+</div>
+      </div>
+
+
+      <div id="status" class="status"></div>
+      
+ <div id="settingsPanel" class="settings-panel">
+
+  <div class="settings-title">
+    Settings
+  
+
+  <button onclick="exportProgress()">
+    Export Progress
+  </button>
+
+  <button onclick="document.getElementById('importFile').click()">
+  Import Progress
+</button>
+
+</div>
+
+<div id="statsPanel">
+  <h4>Learning Statistics</h4>
+  <div>Total: <span id="statTotal">0</span></div>
+  <div>Know: <span id="statKnow">0</span></div>
+  <div>Hard: <span id="statHard">0</span></div>
+  <div>Review: <span id="statReview">0</span></div>
+  <div>Unknown: <span id="statUnknown">0</span></div>
+  <div
+  id="needDecisionSummary"
+  style="
+    cursor:pointer;
+    color:#1976d2;
+    font-weight:600;
+  "
+  onclick="toggleNeedDecisionList()"
+>
+  Need Decision:
+  <span id="statNeedDecision">0</span>
+</div>
+<div
+  id="needDecisionList"
+  style="
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:320px;
+    max-width:90%;
+    max-height:60vh;
+    overflow-y:auto;
+    background:white;
+    border:1px solid #ddd;
+    border-radius:16px;
+    padding:16px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.2);
+    z-index:99999;
+  "
+></div>
+<div>
+  Due Today:
+  <span id="statDueToday">0</span>
+</div>
+<div
+  id="favoriteSummary"
+  style="
+    cursor:pointer;
+    color:#f59e0b;
+    font-weight:600;
+  "
+  onclick="toggleFavoriteList()"
+>
+  Favorite:
+  <span id="statFavorite">0</span>
+</div>
+
+<div
+  id="favoriteList"
+  style="
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:320px;
+    max-width:90%;
+    max-height:60vh;
+    overflow-y:auto;
+    background:white;
+    border:1px solid #ddd;
+    border-radius:16px;
+    padding:16px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.2);
+    z-index:99999;
+  "
+></div>
+ <div>Progress: <span id="statProgress">0%</span></div>
+
+<hr style="margin:16px 0;">
+
+<h4>Interface Options</h4>
+
+<label>
+  <input
+    type="checkbox"
+    id="showRevealOption"
+    checked
+    onchange="saveUISettings()"
+  >
+  Show Reveal Button
+</label>
+
+<br>
+
+<label>
+  <input
+    type="checkbox"
+    id="showNextOption"
+    checked
+    onchange="saveUISettings()"
+
+  >
+  Show Next Button
+</label>
+
+<br>
+
+<label>
+  <input
+    type="checkbox"
+    id="showPreviousOption"
+    checked
+    onchange="saveUISettings()"
+
+  >
+  Show Previous Button
+</label>
+
+<br>
+
+<label>
+  <input
+    type="checkbox"
+    id="showHintOption"
+    checked
+    onchange="saveUISettings()"
+
+  >
+  Show Hint Button
+</label>
+
+<br>
+
+<label>
+  <input
+    type="checkbox"
+    id="showSpeakOption"
+    checked
+    onchange="saveUISettings()"
+
+  >
+  Show Speak Button
+</label>
+
+</div>
+
+  </div>
+<input type="file" id="importFile" accept=".json" style="display:none;">
+  <script>
+    let data = [];
+    let currentIndex = 0;
+    let selectedConfusedChar = null;
+    // ===== DOM CACHE =====
+    const hanziEl = document.getElementById('hanzi');
+    const compareBox = document.getElementById('compareBox');
+    const compareLeft = document.getElementById('compareLeft');
+    const compareRight = document.getElementById('compareRight');
+    const polyphonicIndicatorEl = document.getElementById('polyphonicIndicator');
+
+    const seenReminderEl = document.getElementById('seenReminder');
+    const pinyinEl = document.getElementById('pinyin');
+
+    const similarBox = document.getElementById('similarBox');
+    const similarText = document.getElementById('similarText');
+
+    const meaningEl = document.getElementById('meaning');
+
+    const commonWordsEl = document.getElementById('commonWords');
+    const wordRevealEl = document.getElementById('wordReveal');
+    const sentenceCnEl = document.getElementById('sentenceCn');
+    const sentencePyEl = document.getElementById('sentencePy');
+    const sentenceThEl = document.getElementById('sentenceTh');
+
+    const hintBoxEl = document.getElementById('hintBox');
+    const hintTextEl = document.getElementById('hintText');
+
+    const searchInputEl = document.getElementById('searchInput');
+    const searchResultsEl = document.getElementById('searchResults');
+    const statTotalEl = document.getElementById('statTotal');
+    const statKnowEl = document.getElementById('statKnow');
+    const statHardEl = document.getElementById('statHard');
+    const statReviewEl = document.getElementById('statReview');
+    const statUnknownEl = document.getElementById('statUnknown');
+    const statProgressEl = document.getElementById('statProgress');
+    const statNeedDecisionEl = document.getElementById('statNeedDecision');
+    const statDueTodayEl = document.getElementById('statDueToday');
+    const statFavoriteEl = document.getElementById('statFavorite');
+
+    let revealVisible = false;
+    let hintVisible = false;
+    let currentMode = 'all';
+    let uiSettings = JSON.parse(
+  localStorage.getItem(
+    'mandarinUISettings'
+  ) || JSON.stringify({
+
+    showReveal: true,
+    showNext: true,
+    showPrevious: true,
+    showHint: true,
+    showSpeak: true
+
+  })
+);
+
+    let memoryState = JSON.parse(localStorage.getItem('mandarinMemoryState') || '{}'
+);
+    let seenCount = JSON.parse(localStorage.getItem('mandarinSeenCount') || '{}'
+);
+    let reviewData = JSON.parse(localStorage.getItem('mandarinReviewData') || '{}'
+);
+    let favoriteState = JSON.parse(localStorage.getItem('mandarinFavoriteState'
+  ) || '{}'
+);
+    let cardHistory = [];
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    async function loadData() {
+      try {
+        const response = await fetch('./data/vocab.json');
+
+        if (!response.ok) {
+        throw new Error('Failed to load vocab.json');
+        }
+
+        data = await response.json();
+
+data.forEach((card, index) => {
+
+  if (card.id === undefined || card.id === null) {
+
+    console.warn(
+      `Missing id at card index ${index}:`,
+      card
+    );
+
+  }
+
+});
+       if (data.length > 0) {
+        showCard(0);
+        setMode('all');
+        updateStats();
+      }
+      } catch (error) {
+        hanziEl.innerText = 'Cannot load vocab.json';
+        console.error(error);
+      }
+    }
+const REPORT_THRESHOLD = 10;
+const SRS_STAGES = [
+  1,
+  3,
+  7,
+  14,
+  30,
+  60,
+  90
+];
+function getTodayString() {
+
+  const today = new Date();
+
+  return today
+    .toISOString()
+    .split('T')[0];
+
+}
+function openCompareCard() {
+
+  const hanzi =
+    document.getElementById(
+      'popupHanzi'
+    ).innerText;
+
+  const targetIndex =
+    data.findIndex(
+      x => x.hanzi === hanzi
+    );
+
+  if (targetIndex >= 0) {
+
+    cardHistory.push(
+      currentIndex
+    );
+
+    document.getElementById(
+      'comparePopup'
+    ).style.display =
+      'none';
+
+    showCard(targetIndex);
+
+  }
+
+}
+function addDaysToToday(days) {
+
+  const date = new Date();
+
+  date.setDate(
+    date.getDate() + days
+  );
+
+  return date
+    .toISOString()
+    .split('T')[0];
+
+}
+function getPolyphonicInfo(card) {
+
+  if (!card || !card.hanzi) {
+    return null;
+  }
+
+  const matches =
+    data.filter(
+      x => x.hanzi === card.hanzi
+    );
+
+  if (matches.length <= 1) {
+    return null;
+  }
+
+  const currentIndex =
+    matches.findIndex(
+      x => x.id === card.id
+    );
+
+  return {
+    current:
+      currentIndex + 1,
+    total:
+      matches.length
+  };
+
+}
+
+function shouldShowSeenReminder(card) {
+
+  if (!card || !card.id) {
+    return false;
+  }
+
+  const seen =
+    seenCount[card.id] || 0;
+
+  const state =
+    memoryState[card.id];
+
+  return (
+    seen >= REPORT_THRESHOLD &&
+    !state
+  );
+
+}
+function handleSeenReminder() {
+
+  alert(
+    'Mark Know / Hard / Review\n' +
+    'to speed up your progress.'
+  );
+
+}
+function getFavoriteCards() {
+
+  return data.filter(card =>
+    favoriteState[card.id]
+  );
+
+}
+function toggleFavoriteList() {
+
+  const list =
+    document.getElementById(
+      'favoriteList'
+    );
+
+  if (
+    list.style.display === 'block'
+  ) {
+
+    list.style.display = 'none';
+    return;
+
+  }
+
+  const cards =
+    getFavoriteCards();
+
+  list.innerHTML =
+`
+<div
+style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:8px;
+"
+>
+
+<h3
+style="
+margin:0;
+flex:1;
+text-align:center;
+"
+>
+Favorite Words
+</h3>
+
+<span
+onclick="
+document.getElementById(
+'favoriteList'
+).style.display='none'
+"
+style="
+cursor:pointer;
+width:24px;
+height:24px;
+border-radius:50%;
+border:1px solid #999;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:14px;
+"
+>
+✕
+</span>
+
+</div>
+
+<div id="favoriteItems"></div>
+`;
+
+  const itemsContainer =
+    document.getElementById(
+      'favoriteItems'
+    );
+
+  cards.forEach(card => {
+
+    const row =
+      document.createElement('div');
+
+    row.innerText =
+      `⭐ ${card.hanzi} ${card.pinyin}`;
+
+    row.style.cursor =
+      'pointer';
+
+    row.style.marginBottom =
+      '6px';
+
+    row.onclick = () => {
+
+      const targetIndex =
+        data.findIndex(
+          x => x.id === card.id
+        );
+
+      if (targetIndex >= 0) {
+
+        showCard(
+          targetIndex
+        );
+
+      }
+
+      document.getElementById(
+        'favoriteList'
+      ).style.display =
+        'none';
+
+    };
+
+    itemsContainer.appendChild(
+      row
+    );
+
+  });
+
+  list.style.display =
+    'block';
+
+}
+function toggleNeedDecisionList() {
+
+  const list =
+    document.getElementById(
+      'needDecisionList'
+    );
+
+  if (
+    list.style.display === 'block'
+  ) {
+
+    list.style.display = 'none';
+    return;
+
+  }
+
+  const cards =
+    getNeedDecisionCards();
+if (
+  cards.length === 0
+) {
+  return;
+}
+
+  list.innerHTML =
+  `<div
+  style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:8px;
+  "
+>
+  <h3
+  style="
+    margin:0;
+    flex:1;
+    text-align:center;
+  "
+>
+  Need Your Decision
+</h3>
+
+  <span
+    onclick="
+      document.getElementById(
+        'needDecisionList'
+      ).style.display='none'
+    "
+    style="
+      cursor:pointer;
+      width:24px;
+      height:24px;
+      border-radius:50%;
+      border:1px solid #999;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:14px;
+    "
+  >
+    ✕
+  </span>
+</div>
+
+   <div style="
+     font-size:12px;
+     color:#666;
+     margin-bottom:10px;
+   ">
+     Seen ${REPORT_THRESHOLD}+ times<br>
+     No learning decision yet
+   </div>
+
+   <div id="needDecisionItems"></div>`;
+
+   
+
+  const itemsContainer =
+  document.getElementById(
+    'needDecisionItems'
+  );
+
+cards.forEach(card => {
+
+  const seen =
+    seenCount[card.id] || 0;
+
+  const row =
+    document.createElement('div');
+
+  row.innerText =
+    `${card.hanzi} · ${seen} times`;
+
+  row.style.cursor =
+    'pointer';
+
+  row.onclick = () => {
+
+    const targetIndex =
+      data.findIndex(
+        x => x.id === card.id
+      );
+
+    if (targetIndex >= 0) {
+
+      showCard(targetIndex);
+
+    }
+
+    document.getElementById(
+      'needDecisionList'
+    ).style.display = 'none';
+
+  };
+
+  itemsContainer.appendChild(row);
+
+});
+
+  list.style.display = 'block';
+
+}
+function getNeedDecisionCards() {
+
+  return data
+    .filter(card => {
+
+      const seen =
+        seenCount[card.id] || 0;
+
+      const state =
+        memoryState[card.id];
+
+      return (
+        seen >= REPORT_THRESHOLD &&
+        !state
+      );
+
+    })
+    .sort((a, b) => {
+
+      const seenA =
+        seenCount[a.id] || 0;
+
+      const seenB =
+        seenCount[b.id] || 0;
+
+      return seenB - seenA;
+
+    });
+
+}
+
+function getNeedDecisionCount() {
+
+  let count = 0;
+
+  data.forEach(card => {
+
+    const seen =
+      seenCount[card.id] || 0;
+
+    const state =
+      memoryState[card.id];
+
+    if (
+      seen >= REPORT_THRESHOLD &&
+      !state
+    ) {
+      count++;
+    }
+
+  });
+
+  return count;
+
+}
+function toggleFavorite() {
+
+  const card =
+    data[currentIndex];
+
+  if (
+    !card ||
+    !card.id
+  ) {
+    return;
+  }
+
+  favoriteState[card.id] =
+    !favoriteState[card.id];
+
+  localStorage.setItem(
+    'mandarinFavoriteState',
+    JSON.stringify(
+      favoriteState
+    )
+  );
+
+  updateFavoriteStar();
+  updateStats();
+}
+function updateFavoriteStar() {
+
+  const card =
+    data[currentIndex];
+
+  const star =
+    document.getElementById(
+      'favoriteStar'
+    );
+
+  if (
+    favoriteState[
+      card.id
+    ]
+  ) {
+
+    star.innerText = '⭐';
+
+  } else {
+
+    star.innerText = '☆';
+
+  }
+
+}
+  
+    function showCard(index) {
+      // ===== LOAD CARD DATA =====
+      currentIndex = index;
+      const card = data[index];
+      selectedConfusedChar = null;
+
+      similarBox.classList.remove(
+  'compare-mode'
+);
+    selectedConfusedChar = null;
+      updateFavoriteStar();
+      if (
+  shouldShowSeenReminder(card)
+) {
+
+  seenReminderEl.style.display =
+    'block';
+
+  seenReminderEl.innerText =
+    `👁 ${
+      seenCount[card.id]
+    }`;
+
+} else {
+
+  seenReminderEl.style.display =
+    'none';
+
+}
+      const hintBox = hintBoxEl;
+      const hintText = hintTextEl;
+
+      const pinyin = pinyinEl;
+      const meaning = meaningEl;
+
+      const commonWords = commonWordsEl;
+
+      const sentenceCn = sentenceCnEl;
+      const sentencePy = sentencePyEl;
+      const sentenceTh = sentenceThEl;
+      hintBox.style.display = 'none';
+      revealVisible = false;
+      hintVisible = false;
+      
+      hintText.innerText = '';
+
+      const rawConfused = card.confused_chars;
+
+const confusedChars =
+  typeof rawConfused === 'string'
+    ? rawConfused
+        .split('|')
+        .map(x => x.trim())
+        .filter(x => x)
+        .filter(x => x !== '0')
+        .filter(x => x !== card.hanzi)
+    : [];
+function renderConfusedList(list) {
+
+  similarText.innerHTML = '';
+
+  list.forEach((char) => {
+
+    const span =
+      document.createElement('span');
+
+    span.innerText = char;
+
+    span.style.display =
+      'inline-block';
+
+    span.style.padding =
+      '4px 8px';
+
+    span.style.margin =
+      '2px';
+
+    span.style.borderRadius =
+      '8px';
+
+    span.style.border =
+      '1px solid #1976d2';
+
+    span.style.background =
+      '#eef5ff';
+
+    span.style.fontSize =
+      '18px';
+
+    span.style.cursor =
+      'pointer';
+span.onclick = () => {
+
+  selectedConfusedChar = char;
+
+  compareBox.style.display =
+    'block';
+
+  compareLeft.innerText = '';
+
+  compareRight.innerText =
+    char;
+    compareRight.onclick = () => {
+
+  const targetCard =
+    data.find(
+      x => x.hanzi === char
+    );
+
+  if (targetCard) {
+
+    document.getElementById(
+  'popupHanzi'
+).innerText =
+  targetCard.hanzi;
+
+document.getElementById(
+  'popupPinyin'
+).innerText =
+  targetCard.pinyin || '';
+
+document.getElementById(
+  'popupMeaning'
+).innerText =
+  `${targetCard.thai || ''}
+${targetCard.english || ''}`;
+
+document.getElementById(
+  'comparePopup'
+).style.display =
+  'block';
+
+  } else {
+
+    alert(
+      'Not available'
+    );
+
+  }
+
+};
+  similarBox.classList.add(
+  'compare-mode'
+);
+  renderConfusedList(
+    confusedChars.filter(
+      x => x !== selectedConfusedChar
+    )
+  );
+
+};
+    similarText.appendChild(span);
+
+  });
+
+}
+if (confusedChars.length > 0) {
+ similarText.innerHTML = '';
+
+const visibleConfusedChars =
+  confusedChars.filter(
+    x => x !== selectedConfusedChar
+  );
+
+renderConfusedList(
+  visibleConfusedChars
+);
+  similarBox.style.display =
+    'block';
+
+} else {
+
+  similarBox.style.display =
+    'none';
+
+}
+
+// ===== RENDER HANZI =====
+
+hanziEl.innerText =
+  card.hanzi || '';
+compareBox.style.display =
+  'none';
+
+compareLeft.innerText = '';
+
+compareRight.innerText = '';
+const polyInfo =
+  getPolyphonicInfo(card);
+
+if (polyInfo) {
+
+  polyphonicIndicatorEl.innerText =
+    `${polyInfo.current}/${polyInfo.total}`;
+
+  polyphonicIndicatorEl.style.display =
+    'block';
+
+} else {
+
+  polyphonicIndicatorEl.style.display =
+    'none';
+
+}
+
+
+
+      const hanziLength = (card.hanzi || '').length;
+      const hanziElement = hanziEl;
+
+      if (hanziLength === 1) {
+        hanziElement.style.fontSize = '120px';
+      } else if (hanziLength === 2) {
+        hanziElement.style.fontSize = '96px';
+      } else {
+        hanziElement.style.fontSize = '72px';
+      }
+      // ===== RENDER DETAILS =====
+      pinyin.innerText =
+  card.pos
+    ? `${card.pinyin} [${card.pos}]`
+    : (card.pinyin || '');
+      const englishFormatted = (card.english || '').split('|').join(' • ');
+      const thaiFormatted = (card.thai || '').split('|').join(' • ');
+
+      meaning.innerText = `${thaiFormatted}
+${englishFormatted}`;
+
+      const commonWordsContainer = commonWordsEl;
+      commonWordsContainer.innerHTML = '';
+      wordRevealEl.innerHTML = '';
+      hintBox.style.display = 'none';
+
+if (card.word_cn) { 
+
+  const title = document.createElement('div');
+  title.className = 'common-title';
+
+  commonWordsContainer.appendChild(title);
+
+  const cnWords = card.word_cn.split('|');
+  const pyWords = (card.word_py || '').split('|');
+  const thWords = (card.word_th || '').split('|');
+
+  for (let i = 0; i < cnWords.length; i++) {
+
+    const item = document.createElement('div');
+    item.className = 'common-word-item';
+
+    const word = document.createElement('div');
+    word.className = 'clickable-word';
+    word.innerText =
+  cnWords[i] + (i < cnWords.length - 1 ? " ·" : "");
+    let isExpanded = false;
+    let hasSpoken = false;
+    
+    word.onclick = () => {
+
+  const reveal = wordRevealEl;
+
+  const currentContent = reveal.innerHTML;
+
+  const newContent = `
+    <div class="word-reveal-cn">${cnWords[i]}</div>
+    <div class="word-reveal-py">${pyWords[i] || ''}</div>
+    <div class="word-reveal-th">${thWords[i] || ''}</div>
+  `;
+
+  if (currentContent === newContent) {
+
+    reveal.innerHTML = '';
+
+  } else {
+
+    reveal.innerHTML = newContent;
+
+    const utterance = new SpeechSynthesisUtterance(cnWords[i]);
+    utterance.lang = 'zh-CN';
+
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utterance);
+
+  }
+
+};
+
+item.appendChild(word);
+
+    commonWordsContainer.appendChild(item);
+
+  }
+
+
+      
+      }
+
+      sentenceCn.innerText = card.sentence_cn || '';
+
+      sentenceCnEl.onclick = () => {
+        const utterance = new SpeechSynthesisUtterance(card.sentence_cn || '');
+        utterance.lang = 'zh-CN';
+        speechSynthesis.speak(utterance);
+      };
+      sentencePy.innerText = card.sentence_py || '';
+      sentenceTh.innerText = card.sentence_th || '';
+// ===== HIDE DETAILS INITIALLY =====
+      pinyin.style.display = 'none';
+      meaning.style.display = 'none';
+      commonWords.style.display = 'none';
+      sentenceCn.style.display = 'none';
+      sentencePy.style.display = 'none';
+      sentenceTh.style.display = 'none';
+      hintBox.style.display = 'none';
+      document.getElementById('status').innerText = `Card ${index + 1} / ${data.length}`;
+
+      const currentCardId = card.id;
+      const currentMemory = memoryState[currentCardId];
+
+      const knowBtn = document.querySelector('.know-btn');
+const hardBtn = document.querySelector('.hard-btn');
+const reviewBtn = document.querySelector('.review-btn');
+
+knowBtn.style.opacity = '0.4';
+hardBtn.style.opacity = '0.4';
+reviewBtn.style.opacity = '0.4';
+
+if (currentMemory === 'know') {
+
+  knowBtn.style.opacity = '1';
+
+} else if (currentMemory === 'hard') {
+
+  hardBtn.style.opacity = '1';
+
+} else if (currentMemory === 'review') {
+
+  reviewBtn.style.opacity = '1';
+
+}
+    }
+
+    function searchCards() {
+      // ===== GET SEARCH INPUT =====
+      const keyword = searchInputEl.value.toLowerCase().trim();
+      const resultsContainer = searchResultsEl;
+      // ===== RESET RESULTS =====
+      resultsContainer.innerHTML = '';
+
+      if (!keyword) {
+        return;
+      }
+      // ===== FILTER MATCHING CARDS =====
+      const results = data.filter(card => {
+        return (
+          (card.hanzi || '').toLowerCase().includes(keyword) ||
+          (card.pinyin || '').toLowerCase().includes(keyword) ||
+          (card.thai || '').toLowerCase().includes(keyword) ||
+          (card.english || '').toLowerCase().includes(keyword) ||
+          (card.word_cn || '').toLowerCase().includes(keyword)
+        );
+      }).slice(0, 20);
+      if (results.length === 0) {
+
+  resultsContainer.innerHTML = `
+    <div class="search-item">
+      No matching cards
+    </div>
+  `;
+
+  return;
+
+}
+      // ===== RENDER SEARCH RESULTS =====
+      results.forEach(card => {
+        const item = document.createElement('div');
+        item.className = 'search-item';
+
+        item.innerHTML = `
+          <div class="search-item-cn">${card.hanzi || ''}</div>
+          <div>${card.pinyin || ''}</div>
+          <div>${(card.thai || '').split('|').join(' • ')}</div>
+        `;
+
+        item.onclick = () => {
+
+        cardHistory.push(currentIndex);
+
+        const realIndex = data.indexOf(card);
+
+        showCard(realIndex);
+
+        searchResultsEl.innerHTML = '';
+        searchInputEl.value = '';
+        resultsContainer.innerHTML = '';
+
+      };
+
+        resultsContainer.appendChild(item);
+      });
+    }
+function updateActiveModeButton() {
+
+  const btn =
+    document.getElementById(
+      'activeModeButton'
+    );
+
+  if (!btn) return;
+
+  const labels = {
+
+    all: 'ALL',
+
+    hard: 'FORGET',
+
+    review: 'RECALL',
+
+    unknown: 'UNKNOWN',
+
+    due: 'DUE TODAY',
+
+    needdecision:
+      'NEED DECISION'
+
+  };
+
+  btn.innerText =
+    (labels[currentMode] ||
+      'ALL') + ' ▼';
+
+}
+
+function setMode(mode) {
+
+  currentMode = mode;
+updateActiveModeButton();
+  const allBtn = document.querySelector('.all-mode-btn');
+  const hardBtn = document.querySelector('.hard-mode-btn');
+  const reviewBtn = document.querySelector('.review-mode-btn');
+  const unknownBtn = document.querySelector('.unknown-mode-btn');
+  const dueBtn = document.querySelector('.due-mode-btn');
+  const needDecisionBtn = document.querySelector('.needdecision-mode-btn');
+
+  allBtn.style.opacity = '0.4';
+  hardBtn.style.opacity = '0.4';
+  reviewBtn.style.opacity = '0.4';
+  unknownBtn.style.opacity = '0.4';
+  dueBtn.style.opacity = '0.4';
+  needDecisionBtn.style.opacity = '0.4';
+
+  if (mode === 'all') {
+
+    allBtn.style.opacity = '1';
+
+  } else if (mode === 'hard') {
+
+    hardBtn.style.opacity = '1';
+
+  } else if (mode === 'review') {
+
+    reviewBtn.style.opacity = '1';
+
+  } else if (mode === 'unknown') {
+
+  unknownBtn.style.opacity = '1';
+
+} else if (mode === 'due') {
+
+  dueBtn.style.opacity = '1';
+
+} else if (
+  mode === 'needdecision'
+) {
+
+  needDecisionBtn.style.opacity =
+    '1';
+
+}
+
+}
+    function markCard(state) {
+      const card = data[currentIndex];
+      if (!card || !card.id) return;
+
+memoryState[card.id] = state;
+if (!reviewData[card.id]) {
+
+  reviewData[card.id] = {
+
+    stage: 1,
+
+    nextReviewDate:
+      addDaysToToday(
+        SRS_STAGES[0]
+      )
+
+  };
+
+} else {
+
+  let stage =
+    reviewData[card.id].stage || 1;
+
+  if (state === 'know') {
+
+  stage = Math.min(
+    stage + 1,
+    SRS_STAGES.length
+  );
+
+} else if (
+  state === 'hard'
+) {
+
+  stage = 1;
+
+} else if (
+  state === 'review'
+) {
+
+  // keep same stage
+
+}
+
+  reviewData[card.id].stage =
+    stage;
+
+  reviewData[card.id]
+    .nextReviewDate =
+      addDaysToToday(
+        SRS_STAGES[
+          stage - 1
+        ]
+      );
+
+}
+
+      localStorage.setItem(
+  'mandarinMemoryState',
+  JSON.stringify(memoryState)
+);
+
+localStorage.setItem(
+  'mandarinReviewData',
+  JSON.stringify(reviewData)
+);
+
+updateStats();
+
+nextCard();
+
+    }
+
+    function revealCard() {
+
+  revealVisible = true;
+  if (selectedConfusedChar) {
+
+  selectedConfusedChar = null;
+  similarBox.classList.remove(
+  'compare-mode'
+);
+  showCard(currentIndex);
+
+  revealVisible = true;
+
+}
+  const card = data[currentIndex];
+
+if (card && card.id) {
+
+  seenCount[card.id] =
+    (seenCount[card.id] || 0) + 1;
+
+  localStorage.setItem(
+    'mandarinSeenCount',
+    JSON.stringify(seenCount)
+  );
+
+updateStats();
+
+}
+    const pinyin = pinyinEl;
+    const meaning = meaningEl;
+    const commonWords = commonWordsEl;
+
+    const sentenceCn = sentenceCnEl;
+    const sentencePy = sentencePyEl;
+    const sentenceTh = sentenceThEl;
+
+  pinyin.style.display = 'block';
+  meaning.style.display = 'block';
+  commonWords.style.display = 'block';
+  sentenceCn.style.display = 'block';
+  sentencePy.style.display = 'block';
+  sentenceTh.style.display = 'block';
+
+}
+function toggleModeSelector() {
+
+  const popup =
+    document.getElementById(
+      'modeSelector'
+    );
+
+  if (
+    popup.style.display ===
+    'none'
+  ) {
+
+    popup.style.display =
+      'block';
+
+  } else {
+
+    popup.style.display =
+      'none';
+
+  }
+
+}
+
+   function closeSettings() {
+
+    const panel = document.getElementById('settingsPanel');
+    panel.style.display = 'none';
+}
+function goPreviousCard() {
+
+  if (cardHistory.length === 0) {
+
+    alert('No previous card');
+    return;
+
+  }
+
+  const previousIndex = cardHistory.pop();
+
+  showCard(previousIndex);
+
+}
+    function nextCard() {
+  closeSettings();
+  let found = false;
+
+  for (let i = 1; i <= data.length; i++) {
+
+    const nextIndex = (currentIndex + i) % data.length;
+
+    const card = data[nextIndex];
+
+    const state = memoryState[card.id];
+
+    if (
+      currentMode === 'all' ||
+
+      (currentMode === 'hard' && state === 'hard') ||
+
+      (currentMode === 'review' && state === 'review') ||
+
+      (currentMode === 'unknown' && !state) ||
+
+      (currentMode === 'needdecision' &&
+       (seenCount[card.id] || 0) >= REPORT_THRESHOLD
+ &&
+ !state
+)
+
+||
+
+(
+ currentMode === 'due'
+ &&
+ isDueToday(card)
+)
+    ) {
+
+      cardHistory.push(currentIndex);
+
+      currentIndex = nextIndex;
+
+      showCard(currentIndex);
+
+      found = true;
+
+      break;
+    }
+  }
+
+  if (!found) {
+
+    alert(
+  'No cards in this mode yet.\n\n' +
+  'Mark some cards first.'
+);
+
+  }
+}
+
+    function randomCard() {
+
+  closeSettings();
+
+  const weights = {
+    hard: 45,
+    unknown: 35,
+    review: 15,
+    know: 5
+  };
+
+  const pools = {
+    hard: [],
+    unknown: [],
+    review: [],
+    know: []
+  };
+
+  data.forEach((card, index) => {
+
+    const state = memoryState[card.id];
+
+    if (state === 'hard') {
+
+      pools.hard.push(index);
+
+    } else if (state === 'review') {
+
+      pools.review.push(index);
+
+    } else if (state === 'know') {
+
+      pools.know.push(index);
+
+    } else {
+
+      pools.unknown.push(index);
+
+    }
+
+  });
+
+  const availableGroups = [];
+
+  Object.keys(pools).forEach(group => {
+
+    if (pools[group].length > 0) {
+
+      availableGroups.push({
+        name: group,
+        weight: weights[group]
+      });
+
+    }
+
+  });
+
+  if (availableGroups.length === 0) {
+
+    alert('No cards available.');
+    return;
+
+  }
+
+  const totalWeight =
+    availableGroups.reduce(
+      (sum, group) => sum + group.weight,
+      0
+    );
+
+  let randomWeight =
+    Math.random() * totalWeight;
+
+  let selectedGroup =
+    availableGroups[0].name;
+
+  for (const group of availableGroups) {
+
+    randomWeight -= group.weight;
+
+    if (randomWeight <= 0) {
+
+      selectedGroup = group.name;
+
+      break;
+
+    }
+
+  }
+
+  const pool = pools[selectedGroup];
+
+  const randomIndex =
+    pool[Math.floor(Math.random() * pool.length)];
+
+  cardHistory.push(currentIndex);
+
+  showCard(randomIndex);
+
+}
+
+    function speakHanzi() {
+      const card = data[currentIndex];
+
+      const utterance = new SpeechSynthesisUtterance(card.hanzi);
+      utterance.lang = 'zh-CN';
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utterance);
+    }
+function exportProgress() {
+  const exportData = {
+
+  memoryState,
+
+  seenCount,
+
+  reviewData
+
+};
+
+  const dataStr =
+    JSON.stringify(exportData, null, 2);
+
+  const blob = new Blob([dataStr], {
+    type: 'application/json'
+  });
+
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+
+  a.href = url;
+
+  a.download = 'mandarin-progress.json';
+
+  a.click();
+
+  URL.revokeObjectURL(url);
+
+}
+
+function importProgress(file) {
+if (
+  !confirm(
+    'Importing will replace your current learning progress.\n\nContinue?'
+  )
+) {
+  return;
+}
+  const reader = new FileReader();
+
+  reader.onload = function(event) {
+
+    try {
+
+      const importedData = JSON.parse(event.target.result);
+
+      memoryState = importedData.memoryState || {};
+seenCount = importedData.seenCount || {};
+reviewData =
+  importedData.reviewData || {};
+      localStorage.setItem(
+  'mandarinMemoryState',
+  JSON.stringify(memoryState)
+);
+
+localStorage.setItem(
+  'mandarinSeenCount',
+  JSON.stringify(seenCount)
+);
+localStorage.setItem(
+  'mandarinReviewData',
+  JSON.stringify(reviewData)
+);
+
+      showCard(currentIndex);
+
+updateStats();
+
+alert('Progress imported successfully.');
+
+    } catch (error) {
+
+      alert('Invalid progress file.');
+
+      console.error(error);
+
+    }
+
+  };
+
+  reader.readAsText(file);
+
+}
+document.getElementById('importFile').addEventListener('change', (e) => {
+
+  const file = e.target.files[0];
+
+  if (file) {
+    importProgress(file);
+  }
+
+});
+function saveUISettings() {
+
+  uiSettings.showReveal =
+    document.getElementById(
+      'showRevealOption'
+    ).checked;
+
+  uiSettings.showNext =
+    document.getElementById(
+      'showNextOption'
+    ).checked;
+
+  uiSettings.showPrevious =
+    document.getElementById(
+      'showPreviousOption'
+    ).checked;
+
+  uiSettings.showHint =
+    document.getElementById(
+      'showHintOption'
+    ).checked;
+
+  uiSettings.showSpeak =
+    document.getElementById(
+      'showSpeakOption'
+    ).checked;
+
+  localStorage.setItem(
+    'mandarinUISettings',
+    JSON.stringify(uiSettings)
+  );
+
+  applyUISettings();
+
+}
+function applyUISettings() {
+
+  document.getElementById(
+    'revealBtn'
+  ).style.display =
+    uiSettings.showReveal
+      ? 'inline-block'
+      : 'none';
+
+  document.getElementById(
+    'nextBtn'
+  ).style.display =
+    uiSettings.showNext
+      ? 'inline-block'
+      : 'none';
+
+  document.getElementById(
+    'previousBtn'
+  ).style.display =
+    uiSettings.showPrevious
+      ? 'inline-block'
+      : 'none';
+
+  document.getElementById(
+    'hintBtn'
+  ).style.display =
+    uiSettings.showHint
+      ? 'inline-block'
+      : 'none';
+
+  document.getElementById(
+    'speakBtn'
+  ).style.display =
+    uiSettings.showSpeak
+      ? 'inline-block'
+      : 'none';
+
+}
+
+function toggleSettings() {
+
+  const panel = document.getElementById('settingsPanel');
+
+  panel.style.display =
+    panel.style.display === 'block'
+      ? 'none'
+      : 'block';
+
+}
+function toggleHint() {
+
+  const hintBox = hintBoxEl;
+  const hintText = hintTextEl;
+
+  if (!hintBox || !hintText) {
+    console.error('Hint elements missing');
+    return;
+  }
+
+  if (hintBox.style.display === 'block') {
+
+    hintBox.style.display = 'none';
+
+  } else {
+
+    hintText.textContent = (
+  data[currentIndex]?.hint &&
+  data[currentIndex].hint.trim()
+)
+  ? data[currentIndex].hint
+  : 'Not available';
+    hintBox.style.display = 'block';
+
+  }
+
+}
+document.addEventListener('click', (event) => {
+
+  const searchInput = searchInputEl;
+  const searchResults = searchResultsEl;
+
+  const clickedInsideSearch =
+    searchInput.contains(event.target) ||
+    searchResults.contains(event.target);
+
+  if (!clickedInsideSearch) {
+
+    searchResults.innerHTML = '';
+
+  }
+  const needDecisionPopup =
+  document.getElementById(
+    'needDecisionList'
+  );
+
+const needDecisionSummary =
+  document.getElementById(
+    'needDecisionSummary'
+  );
+
+if (
+  needDecisionPopup.style.display ===
+    'block' &&
+  !needDecisionPopup.contains(
+    event.target
+  ) &&
+  !needDecisionSummary.contains(
+    event.target
+  )
+) {
+
+  needDecisionPopup.style.display =
+    'none';
+
+}
+
+});
+
+function getDueTodayCount() {
+
+  const today =
+    getTodayString();
+
+  let count = 0;
+
+  Object.values(
+    reviewData
+  ).forEach(item => {
+
+    if (
+      item &&
+      item.nextReviewDate &&
+      item.nextReviewDate <=
+        today
+    ) {
+
+      count++;
+
+    }
+
+  });
+
+  return count;
+
+}
+function isDueToday(card) {
+
+  if (
+    !card ||
+    !card.id ||
+    !reviewData[card.id]
+  ) {
+
+    return false;
+
+  }
+
+  return (
+    reviewData[card.id]
+      .nextReviewDate <=
+    getTodayString()
+  );
+
+}
+function getFavoriteCount() {
+
+  let count = 0;
+
+  Object.values(
+    favoriteState
+  ).forEach(value => {
+
+    if (value) {
+
+      count++;
+
+    }
+
+  });
+
+  return count;
+
+}
+
+function updateStats() {
+
+  let know = 0;
+  let hard = 0;
+  let review = 0;
+
+  Object.values(memoryState).forEach(state => {
+
+    if (state === 'know') know++;
+    if (state === 'hard') hard++;
+    if (state === 'review') review++;
+
+  });
+
+  const total = data.length;
+
+  const unknown =
+    total - know - hard - review;
+
+  const progress =
+    total > 0
+      ? ((know + hard + review) / total * 100).toFixed(1)
+      : 0;
+  const needDecision =
+  getNeedDecisionCount();
+
+  const dueToday =
+  getDueTodayCount();
+
+  const favorite =
+  getFavoriteCount();
+
+  statTotalEl.innerText = total;
+  statKnowEl.innerText = know;
+  statHardEl.innerText = hard;
+  statReviewEl.innerText = review;
+  statUnknownEl.innerText = unknown;
+  statNeedDecisionEl.innerText = needDecision;
+  const summary =
+  document.getElementById(
+    'needDecisionSummary'
+  );
+
+if (needDecision === 0) {
+
+  summary.style.cursor =
+    'default';
+
+  summary.style.color =
+    '#999';
+
+} else {
+
+  summary.style.cursor =
+    'pointer';
+
+  summary.style.color =
+    '#1976d2';
+
+}
+  statDueTodayEl.innerText = dueToday;
+  statFavoriteEl.innerText = favorite;
+  statProgressEl.innerText = progress + '%';
+
+}
+
+document.addEventListener('touchstart', (e) => {
+
+  touchStartX = e.changedTouches[0].screenX;
+
+});
+
+document.addEventListener('touchend', (e) => {
+
+  touchEndX = e.changedTouches[0].screenX;
+
+  handleSwipe();
+
+});
+function handleSwipe() {
+
+  const swipeDistance =
+    touchEndX - touchStartX;
+
+  if (swipeDistance < -50) {
+
+    nextCard();
+
+  }
+
+  if (swipeDistance > 50) {
+
+    goPreviousCard();
+
+  }
+
+}
+loadData();
+
+setTimeout(() => {
+
+  const reveal =
+    document.getElementById('showRevealBtn');
+  const next =
+    document.getElementById('showNextBtn');
+  const previous =
+    document.getElementById('showPreviousBtn');
+  const hint =
+    document.getElementById('showHintBtn');
+  const speak =
+    document.getElementById('showSpeakBtn');
+
+  if (reveal)
+    reveal.checked =
+      uiSettings.showReveal;
+
+  if (next)
+    next.checked =
+      uiSettings.showNext;
+
+  if (previous)
+    previous.checked =
+      uiSettings.showPrevious;
+
+  if (hint)
+    hint.checked =
+      uiSettings.showHint;
+
+  if (speak)
+    speak.checked =
+      uiSettings.showSpeak;
+
+  applyUISettings();
+
+}, 100);
+  </script>
+</body>
+</html>
