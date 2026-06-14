@@ -557,17 +557,33 @@ Need Decision
     Forget: -
   </div>
 
-  <div id="menuFavorite">
-    Favorite: -
-  </div>
+ <div
+  id="menuFavorite"
+  onclick="toggleFavoriteList()"
+  style="
+    cursor:pointer;
+    color:#f59e0b;
+    font-weight:600;
+  "
+>
+  Favorite: -
+</div>
 
   <div id="menuUnknown">
     Unknown: -
   </div>
 
-  <div id="menuNeedDecision">
-   Need Decision: -
-  </div>
+  <div
+  id="menuNeedDecision"
+  onclick="toggleNeedDecisionList()"
+  style="
+    cursor:pointer;
+    color:#1976d2;
+    font-weight:600;
+  "
+>
+  Need Decision: -
+</div>
 
   <div id="menuDueToday">
    Due Today: -
@@ -1112,7 +1128,12 @@ Need Decision
 );
     let cardHistory = [];
     let touchStartX = 0;
+    let touchStartY = 0;
+
     let touchEndX = 0;
+    let touchEndY = 0;
+
+    let isMultiTouch = false;
 
     async function loadData() {
       try {
@@ -2114,6 +2135,50 @@ if (currentMemory === 'know') {
         resultsContainer.appendChild(item);
       });
     }
+function getForgetCount() {
+
+  let count = 0;
+
+  Object.values(
+    memoryState
+  ).forEach(state => {
+
+    if (
+      state === 'hard'
+    ) {
+
+      count++;
+
+    }
+
+  });
+
+  return count;
+
+}
+
+function getRecallCount() {
+
+  let count = 0;
+
+  Object.values(
+    memoryState
+  ).forEach(state => {
+
+    if (
+      state === 'review'
+    ) {
+
+      count++;
+
+    }
+
+  });
+
+  return count;
+
+}
+
 function updateActiveModeButton() {
 
   const btn =
@@ -2127,16 +2192,20 @@ function updateActiveModeButton() {
 
     all: 'ALL',
 
-    hard: 'FORGET',
+    hard:
+      `FORGET (${getForgetCount()})`,
 
-    review: 'RECALL',
+    review:
+      `RECALL (${getRecallCount()})`,
 
-    unknown: 'UNKNOWN',
+    unknown:
+      'UNKNOWN',
 
-    due: 'DUE TODAY',
+    due:
+      `DUE TODAY (${getDueTodayCount()})`,
 
     needdecision:
-      'NEED DECISION'
+      `NEED DECISION (${getNeedDecisionCount()})`
 
   };
 
@@ -2145,7 +2214,6 @@ function updateActiveModeButton() {
       'ALL') + ' ▼';
 
 }
-
 function setMode(mode) {
 
   currentMode = mode;
@@ -2164,7 +2232,10 @@ function setMode(mode) {
 
   }
 
-}    function markCard(state) {
+  nextCard();
+
+}
+function markCard(state) {
       const card = data[currentIndex];
       if (!card || !card.id) return;
 
@@ -2943,31 +3014,68 @@ document.getElementById(
 }
 
 
-document.addEventListener('touchstart', (e) => {
+document.addEventListener(
+'touchstart',
+(e) => {
 
-  touchStartX = e.changedTouches[0].screenX;
+  if (
+    e.touches.length > 1
+  ) {
+
+    isMultiTouch = true;
+    return;
+
+  }
+
+  isMultiTouch = false;
+
+  touchStartX =
+    e.changedTouches[0].screenX;
+
+  touchStartY =
+    e.changedTouches[0].screenY;
 
 });
 
-document.addEventListener('touchend', (e) => {
+document.addEventListener(
+'touchend',
+(e) => {
 
-  touchEndX = e.changedTouches[0].screenX;
+  if (isMultiTouch) {
+    return;
+  }
+
+  touchEndX =
+    e.changedTouches[0].screenX;
+
+  touchEndY =
+    e.changedTouches[0].screenY;
 
   handleSwipe();
 
 });
 function handleSwipe() {
 
-  const swipeDistance =
+  const deltaX =
     touchEndX - touchStartX;
 
-  if (swipeDistance < -50) {
+  const deltaY =
+    touchEndY - touchStartY;
+
+  if (
+  Math.abs(deltaX) <
+  Math.abs(deltaY) * 2
+) {
+  return;
+}
+
+  if (deltaX < -80) {
 
     nextCard();
 
   }
 
-  if (swipeDistance > 50) {
+  if (deltaX > 80) {
 
     goPreviousCard();
 
